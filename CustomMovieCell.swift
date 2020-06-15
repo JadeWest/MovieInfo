@@ -12,4 +12,6 @@ class CustomMovieCell:UICollectionViewCell {
     @IBOutlet weak var moviePoster: UIImageView!
     @IBOutlet weak var movieTitle: UILabel!
     @IBOutlet weak var releaseYear: UILabel!
+    var omdbId: String?
+    
 }

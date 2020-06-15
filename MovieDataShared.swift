@@ -11,6 +11,6 @@ import Foundation
 class MovieInformation {
     static let movieShared: MovieInformation = MovieInformation()
     
-    var title: String?
     var imdbID: String?
+    var searchText: String?
 }

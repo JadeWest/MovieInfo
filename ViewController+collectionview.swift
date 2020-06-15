@@ -14,34 +14,42 @@ extension ViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDa
         return self.numberOfCell
     }
     
+    //TODO: imagecaching 추가
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         guard let cell: CustomMovieCell = collectionView.dequeueReusableCell(withReuseIdentifier: self.cellIdentifier, for: indexPath) as? CustomMovieCell
             else { return UICollectionViewCell()}
         
         let row:Int = indexPath.row
-
-        let urlStr:String = self.sortedMovie[row].Poster
-        
-        // image cache
-        // set default image
+        let imageUrl:String = self.sortedMovie[row].Poster
         var image:UIImage? = UIImage(named: "test")
+        let posterKey = self.sortedMovie[row].imdbID as NSString
+        let posterCache = NSCache<NSString, UIImage>()
         
-        if !urlStr.contains("N/A") {
-            guard let url:URL = URL(string: urlStr) else { return UICollectionViewCell() }
+//         response data has no poster
+        if let cachedImage = posterCache.object(forKey: posterKey) {
+            DispatchQueue.main.async {
+                cell.moviePoster.image = cachedImage
+            }
+            return cell
+        }
+        if !imageUrl.contains("N/A") {
+            guard let url:URL = URL(string: imageUrl) else { return UICollectionViewCell() }
             
             do {
                 let imageData = try Data(contentsOf: url)
                 image = UIImage(data: imageData)
-                
-                //let imageData = try? Data(contentsOf: url!)
+                posterCache.setObject(image!, forKey: posterKey)
             } catch {
                 print(error)
             }
         }
+        // rendering
         DispatchQueue.main.async {
             cell.moviePoster.image = image
             cell.movieTitle.text = self.sortedMovie[row].Title
             cell.releaseYear.text = self.sortedMovie[row].Year
+            cell.omdbId = self.sortedMovie[row].imdbID
         }
         return cell
     }
@@ -61,4 +69,8 @@ extension ViewController: UICollectionViewDelegateFlowLayout, UICollectionViewDa
         let screen = collectionView.bounds
         // return CGSize(width: 50, height: 50)
         return CGSize(width: screen.width/3, height: screen.height/3)
-    }}
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    }
+}

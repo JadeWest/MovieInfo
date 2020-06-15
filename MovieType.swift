@@ -24,4 +24,6 @@ struct Movie: Codable {
         case type = "Type"
         // type instead of Type
     }
+    
+    
 }
